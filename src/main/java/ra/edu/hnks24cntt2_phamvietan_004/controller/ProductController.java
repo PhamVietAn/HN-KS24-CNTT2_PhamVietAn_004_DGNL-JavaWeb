@@ -19,9 +19,6 @@ import ra.edu.hnks24cntt2_phamvietan_004.model.Product;
 import ra.edu.hnks24cntt2_phamvietan_004.service.ProductService;
 
 import jakarta.annotation.PostConstruct;
-import ra.edu.hnks24cntt2_phamvietan_004.model.Product;
-import java.util.List;
-
 import java.util.List;
 import java.util.Optional;
 
