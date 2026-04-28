@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý sản phẩm</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Quản lý sản phẩm</h3>
+        <a class="btn btn-primary" th:href="@{/products/create}">Thêm mới</a>
+    </div>
+
+    <form class="form-inline mb-3" th:action="@{/products}" method="get">
+        <input
+                type="text"
+                class="form-control mr-2"
+                name="keyword"
+                placeholder="Tìm theo tên hoặc danh mục"
+                th:value="${keyword}"
+                style="width: 250px"
+        >
+        <input type="hidden" name="sortField" th:value="${sortField}">
+        <input type="hidden" name="sortDir" th:value="${sortDir}">
+        <button type="submit" class="btn btn-outline-primary">Tìm kiếm</button>
+    </form>
+
+    <div class="alert alert-info" th:if="${products.totalElements == 0}">
+        Chưa có sản phẩm nào trong cửa hàng.
+    </div>
+
+    <div th:if="${products.totalElements > 0}">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-light">
+                <tr>
+                    <th>STT</th>
+                    <th>
+                        <a th:href="@{/products(page=${currentPage}, sortField='productName', sortDir=${sortField == 'productName' ? reverseSortDir : 'asc'}, keyword=${keyword})}">
+                            Tên sản phẩm
+                        </a>
+                    </th>
+                    <th>Danh mục</th>
+                    <th>
+                        <a th:href="@{/products(page=${currentPage}, sortField='price', sortDir=${sortField == 'price' ? reverseSortDir : 'asc'}, keyword=${keyword})}">
+                            Giá (VNĐ)
+                        </a>
+                    </th>
+                    <th>
+                        <a th:href="@{/products(page=${currentPage}, sortField='stock', sortDir=${sortField == 'stock' ? reverseSortDir : 'asc'}, keyword=${keyword})}">
+                            Tồn kho
+                        </a>
+                    </th>
+                    <th>Mô tả</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product, stat : ${products.content}">
+                    <td th:text="${currentPage * size + stat.index + 1}"></td>
+                    <td th:text="${product.productName}"></td>
+                    <td th:text="${product.category}"></td>
+                    <td th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 0, 'POINT')}"></td>
+                    <td th:text="${product.stock}"></td>
+                    <td th:text="${product.description == null ? '' : #strings.abbreviate(product.description, 60)}"></td>
+                    <td class="text-nowrap">
+                        <a
+                                class="btn btn-sm btn-warning mr-1"
+                                th:href="@{/products/{id}/edit(id=${product.id}, page=${currentPage}, sortField=${sortField}, sortDir=${sortDir}, keyword=${keyword})}"
+                        >
+                            Sửa
+                        </a>
+                        <form
+                                th:action="@{/products/{id}/delete(id=${product.id}, page=${currentPage}, sortField=${sortField}, sortDir=${sortDir}, keyword=${keyword})}"
+                                method="post"
+                                class="d-inline"
+                                onsubmit="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?');"
+                        >
+                            <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                Trang <span th:text="${currentPage + 1}"></span> /
+                <span th:text="${totalPages == 0 ? 1 : totalPages}"></span>
+            </div>
+            <div>
+                <a
+                        class="btn btn-outline-secondary mr-2"
+                        th:classappend="${currentPage == 0} ? 'disabled' : ''"
+                        th:href="@{/products(page=${currentPage - 1}, sortField=${sortField}, sortDir=${sortDir}, keyword=${keyword})}"
+                >
+                    Previous
+                </a>
+                <a
+                        class="btn btn-outline-secondary"
+                        th:classappend="${currentPage + 1 >= totalPages} ? 'disabled' : ''"
+                        th:href="@{/products(page=${currentPage + 1}, sortField=${sortField}, sortDir=${sortDir}, keyword=${keyword})}"
+                >
+                    Next
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
